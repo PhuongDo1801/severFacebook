@@ -123,7 +123,7 @@ postsController.list = async (req, res, next) => {
         // .populate("videos", ["fileName"])
         .populate({
           path: "author",
-          select: "_id username phonenumber avatar",
+          // select: "_id username phonenumber avatar",
           model: "Users",
           // populate: {
           //   path: "avatar",
@@ -162,19 +162,19 @@ postsController.list = async (req, res, next) => {
       // get post of friends of 1 user
       posts = await PostModel.find({
         author: listIdFriends,
-      });
+      })
       // .populate("images", ["fileName"])
       // .populate("videos", ["fileName"])
-      // .populate({
-      //   path: "author",
-      //   select: "_id username phonenumber avatar",
-      //   model: "Users",
+      .populate({
+        path: "author",
+        // select: "_id username phonenumber avatar",
+        model: "Users",
       //   populate: {
       //     path: "avatar",
       //     select: "_id fileName",
       //     model: "Documents",
       //   },
-      // });
+      });
     }
     let postWithIsLike = [];
     for (let i = 0; i < posts.length; i++) {
