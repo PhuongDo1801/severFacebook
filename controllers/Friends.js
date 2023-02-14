@@ -214,18 +214,35 @@ friendsController.listFriends = async (req, res, next) => {
         sender: req.userId,
         status: "1",
       }).distinct("receiver");
+      console.log({ requested });
       const accepted = await FriendModel.find({
         receiver: req.userId,
         status: "1",
       }).distinct("sender");
-
+      console.log({ accepted });
       const listUser = [...requested, ...accepted];
+      console.log({ listUser });
       let listFriendId;
       //   let listUser = await UserModel.find().distinct("_id");
-      for (const element of userBlock) {
-        listFriendId = listUser.filter((userId) => {
-          return userId.toString() != element.toString();
-        });
+      //   if (userBlock) {
+      //     for (const element of userBlock) {
+      //       console.log(9999);
+      //       console.log({ element });
+      //       listFriendId = listUser.filter((userId) => {
+      //         return userId.toString() != element.toString();
+      //       });
+      //     }
+      //   }
+      if (userBlock.length != 0) {
+        for (const element of userBlock) {
+          console.log(9999);
+          console.log({ element });
+          listFriendId = listUser.filter((userId) => {
+            return userId.toString() != element.toString();
+          });
+        }
+      } else {
+        listFriendId = listUser;
       }
       console.log({ listFriendId });
 
