@@ -209,44 +209,28 @@ friendsController.listFriends = async (req, res, next) => {
       const userBlock = await UserModel.findOne({ _id: req.userId }).distinct(
         "blocked_diary"
       );
-      console.log(1111, "blocked_diary", userBlock);
+
       const requested = await FriendModel.find({
         sender: req.userId,
         status: "1",
       }).distinct("receiver");
-      console.log({ requested });
+
       const accepted = await FriendModel.find({
         receiver: req.userId,
         status: "1",
       }).distinct("sender");
-      console.log({ accepted });
-      const listUser = [...requested, ...accepted];
-      console.log({ listUser });
-      let listFriendId;
-      //   let listUser = await UserModel.find().distinct("_id");
-      //   if (userBlock) {
-      //     for (const element of userBlock) {
-      //       console.log(9999);
-      //       console.log({ element });
-      //       listFriendId = listUser.filter((userId) => {
-      //         return userId.toString() != element.toString();
-      //       });
-      //     }
-      //   }
+
+      let listUser = [...requested, ...accepted];
+
       if (userBlock.length != 0) {
         for (const element of userBlock) {
-          console.log(9999);
-          console.log({ element });
-          listFriendId = listUser.filter((userId) => {
+          listUser = listUser.filter((userId) => {
             return userId.toString() != element.toString();
           });
         }
-      } else {
-        listFriendId = listUser;
       }
-      console.log({ listFriendId });
 
-      let users = await UserModel.find().where("_id").in(listFriendId).exec();
+      let users = await UserModel.find().where("_id").in(listUser).exec();
 
       res.status(200).json({
         code: 200,
@@ -267,21 +251,25 @@ friendsController.suggest = async (req, res, next) => {
   try {
     const userId = req.userId;
     const blockUser = await UserModel.findById(userId).distinct(
-      "blocked_inbox"
+      "blocked_diary"
     );
-    let requested1 = await FriendModel.find({
+
+    const requested1 = await FriendModel.find({
       sender: req.userId,
       status: "1",
     }).distinct("receiver");
-    let requested0 = await FriendModel.find({
+
+    const requested0 = await FriendModel.find({
       sender: req.userId,
       status: "0",
     }).distinct("receiver");
-    let accepted1 = await FriendModel.find({
+
+    const accepted1 = await FriendModel.find({
       receiver: req.userId,
       status: "1",
     }).distinct("sender");
-    let accepted0 = await FriendModel.find({
+
+    const accepted0 = await FriendModel.find({
       receiver: req.userId,
       status: "0",
     }).distinct("sender");
@@ -294,6 +282,7 @@ friendsController.suggest = async (req, res, next) => {
       ...accepted0,
       userId,
     ];
+
     let listUser = await UserModel.find().distinct("_id");
     for (const element of dataUnSuggest) {
       listUser = listUser.filter((userId) => {
